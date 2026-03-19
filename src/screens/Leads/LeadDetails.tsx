@@ -99,9 +99,9 @@ function LeadDetails() {
       
       {/* 🔙 Back */}
       <div className="flex items-center gap-3 cursor-pointer">
-        <span onClick={() => navigate("/leads")}>
-          <ArrowLeftOutlined />
-        </span>
+         <Button className='arrow-icon' onClick={() => navigate('/leads')}>
+           <ArrowLeftOutlined/>
+        </Button>
 
         <div>
           <h1 className="text-xl font-bold">
