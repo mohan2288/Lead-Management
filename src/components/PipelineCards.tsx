@@ -36,7 +36,7 @@ if (loading){
     }
 
   return (
-    <div className='flex gap-5 max-sm:flex-col w-full'>
+    <div className='flex flex-wrap gap-5 max-sm:flex-col w-full'>
         {cardData.map((item)=>(
             <Card key={item.stage_name} className='pipeline-card flex flex-col gap-5 flex-1'>
                 <p className='text-gray-600'>{item.stage_name}</p>

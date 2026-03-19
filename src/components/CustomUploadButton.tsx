@@ -1,10 +1,15 @@
 import { useRef, useState, useEffect } from "react"
 import { toast } from "react-toastify"
 
-function CustomUploadButton({ onUpload, defaultImage }: any) {
+interface Props {
+  onUpload: (file: File) => void
+  defaultImage?: string
+}
+
+function CustomUploadButton({ onUpload, defaultImage }: Props) {
 
   const fileRef = useRef<HTMLInputElement | null>(null)
-  const [image, setImage] = useState<string>(defaultImage)
+  const [image, setImage] = useState<string>("")
 
   useEffect(() => {
     if (defaultImage) {
@@ -26,17 +31,21 @@ function CustomUploadButton({ onUpload, defaultImage }: any) {
       return
     }
 
-    setImage(URL.createObjectURL(file))
+    const previewUrl = URL.createObjectURL(file)
+    setImage(previewUrl)
+
     onUpload(file)
+
+    return () => URL.revokeObjectURL(previewUrl)
   }
 
   return (
     <div className="flex gap-5 items-center">
 
+      {/* ✅ Image Preview */}
       <img
-        src={image}
-        alt="profile"
-        className="flex h-30 w-30 object-cover rounded-full items-center justify-center"
+        src={image || image !== "" ? image : "/default-profile.png"}
+        className="h-20 w-20 object-cover rounded-full bg-blue-50"
       />
 
       <input
@@ -50,13 +59,13 @@ function CustomUploadButton({ onUpload, defaultImage }: any) {
       <div className="flex flex-col gap-3">
         <button
           onClick={handleClick}
-          className="border border-blue-50 h-10 w-40 
-          rounded-md text-black font-semibold bg-blue-50"
+          className="border border-blue-200 h-10 w-40 
+          rounded-md text-black font-semibold bg-blue-100 hover:bg-blue-200"
         >
           Upload Photo
         </button>
 
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm">
           JPG, PNG or GIF. Max 10MB.
         </p>
       </div>

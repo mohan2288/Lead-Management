@@ -105,7 +105,7 @@ function PipelineUserCard() {
     }
     else {
         return (
-        <div className="flex gap-6 max-sm:flex-col p-4">
+        <div className="flex flex-wrap gap-6 max-sm:flex-col p-4">
 
   {data.map((item) => (
 

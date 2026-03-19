@@ -13,6 +13,14 @@ export const UpdateProfile = async(formData:FormData)=>{
 
 }
 
+export const addProfile = async (formData:FormData)=>{
+    return api.post("/user/add_profile_pic",formData,{
+         headers:{
+           "Content-Type" :  "multipart/form-data"
+        }
+    })
+}
+
 export const Viewstage = async()=>{
     return api.get("/lead/view_Stage")
 }
