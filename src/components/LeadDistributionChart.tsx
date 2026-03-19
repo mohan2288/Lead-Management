@@ -64,7 +64,7 @@ const LeadDistributionChart = () => {
   }, []);
 
   return (
-    <Card id="chart" style={{width:"40%"}} className="distribution-card max-sm:w-full! max-sm:text-center!">
+    <Card id="chart" style={{width:"40%"}} className="distribution-card max-sm:w-full!">
       <ReactApexChart options={options} 
       series={series} type="pie" width={380}/>
     </Card>

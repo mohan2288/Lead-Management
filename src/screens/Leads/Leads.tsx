@@ -18,11 +18,9 @@ function Leads() {
 
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
-  const [total, setTotal] = useState(0);
 
   const [leads, setLeads] = useState<any[]>([]);
   const [searchText, setSearchText] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [status, setStatus] = useState("All Status");
   const [priority, setPriority] = useState("All Priority");
@@ -80,27 +78,10 @@ function Leads() {
     },
   };
 
-  // ✅ Debounce ONLY search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchText);
-      setPage(1);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchText]);
-
-  // ✅ Fetch Leads
+  // ✅ Fetch Leads (NO FILTERS)
   const fetchLeads = async () => {
     try {
-      const response = await lead({
-        input: debouncedSearch,
-        status: status === "All Status" ? "" : status,
-        priority: priority === "All Priority" ? "" : priority,
-        stage: stage === "All Stages" ? "" : stage,
-        page,
-        size,
-      });
+      const response = await lead({ page, size });
 
       const data = response?.data || [];
 
@@ -118,16 +99,40 @@ function Leads() {
       }));
 
       setLeads(formattedLeads);
-      setTotal(response?.data?.total || data.length);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Error fetching leads");
     }
   };
 
-  // ✅ Trigger API (filters + pagination + debounced search)
   useEffect(() => {
     fetchLeads();
-  }, [status, priority, stage, page, size, debouncedSearch]);
+  }, [page, size]);
+
+  // ✅ UI FILTERING (Search + Dropdowns)
+  const filteredLeads = leads.filter((lead) => {
+    const search = searchText.toLowerCase();
+
+    const matchesSearch =
+      lead.name?.toLowerCase().includes(search) ||
+      lead.company?.toLowerCase().includes(search) ||
+      lead.email?.toLowerCase().includes(search);
+
+    const matchesStatus =
+      status === "All Status" || lead.status === status;
+
+    const matchesPriority =
+      priority === "All Priority" || lead.priority === priority;
+
+    const matchesStage =
+      stage === "All Stages" || lead.stage === stage;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesStage
+    );
+  });
 
   return (
     <div className="w-full m-auto flex flex-col gap-10">
@@ -146,74 +151,67 @@ function Leads() {
           size="large"
           icon={<PlusOutlined />}
           onClick={() => navigate("/leads/add-lead")}
-          style={{ borderRadius: "8px" }}
         >
           Add Lead
         </Button>
       </div>
 
       {/* Filters */}
-      <Card style={{ borderRadius: "10px" }} className="hover-card">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "20px",
-            flexWrap: "wrap",
-          }}
-        >
+      <Card className="hover-card">
+        <div className="flex flex-wrap gap-4 justify-between items-center">
 
-          {/* Search */}
+          {/* 🔍 Search */}
           <Input
-            placeholder="Search leads by name, company or email"
+            placeholder="Search leads..."
             prefix={<SearchOutlined />}
             allowClear
             size="large"
-            className="custom-leadinput"
-            style={{ minWidth: "150px", flex: "1" }}
-            onChange={(e) => setSearchText(e.target.value)}
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: 1, minWidth: 200 }}
           />
 
-          {/* Filters */}
-          <Space style={{ flexWrap: "wrap" }}>
+          {/* 🎯 Filters */}
+          <Space wrap>
             <Dropdown menu={statusMenu}>
-              <span>
-                <Button size="large">
-                  {status} <DownOutlined />
-                </Button>
-              </span>
+              <Button>{status} <DownOutlined /></Button>
             </Dropdown>
 
             <Dropdown menu={priorityMenu}>
-              <span>
-                <Button size="large">
-                  {priority} <DownOutlined />
-                </Button>
-              </span>
+              <Button>{priority} <DownOutlined /></Button>
             </Dropdown>
 
             <Dropdown menu={stageMenu}>
-              <span>
-                <Button size="large">
-                  {stage} <DownOutlined />
-                </Button>
-              </span>
+              <Button>{stage} <DownOutlined /></Button>
             </Dropdown>
 
-            <Button icon={<FilterOutlined />} size="large" />
+            {/* 🔄 Reset */}
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => {
+                setSearchText("");
+                setStatus("All Status");
+                setPriority("All Priority");
+                setStage("All Stages");
+              }}
+            >
+              Reset
+            </Button>
           </Space>
 
         </div>
       </Card>
 
       {/* Table */}
-      <div style={{ marginTop: "20px", overflowX: "auto" }}>
+      <div style={{ overflowX: "auto" }}>
         <LeadTable
-          data={leads}
+          data={filteredLeads}
           page={page}
           size={size}
-          total={total}
+          total={filteredLeads.length}
           onChangePage={(p, s) => {
             setPage(p);
             setSize(s);

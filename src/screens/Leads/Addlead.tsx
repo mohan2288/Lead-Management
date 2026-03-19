@@ -104,10 +104,10 @@ function Addlead() {
     <div className='add-lead flex flex-col gap-5'>
 
       {/* Header */}
-      <div className='flex items-center gap-5'>
-        <span onClick={() => navigate('/leads')}>
-          <ArrowLeftOutlined />
-        </span>
+      <div className='flex items-center gap-10'>
+        <Button className='arrow-icon' onClick={() => navigate('/leads')}>
+           <ArrowLeftOutlined/>
+        </Button>
         <div>
           <h1 className='text-3xl font-bold'>Add New Lead</h1>
           <p>Create a new lead record</p>

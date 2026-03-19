@@ -27,3 +27,18 @@
 .lead-notes::placeholder{
   color: #555;
 }
+.arrow-icon{
+  border: none;
+  color: black;
+  height: 40px !important;
+  width: 50px !important;
+  background-color: var(--body-color);
+}
+.arrow-icon:hover{
+  height: 40px !important;
+  width: 50px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background-color: turquoise !important;
+  color: white !important;
+}
